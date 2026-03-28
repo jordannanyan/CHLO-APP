@@ -88,11 +88,11 @@ src/
 - API call dipisahkan ke service layer (`services/`) agar halaman tetap bersih dan logika fetching mudah diganti/di-mock saat testing.
 - `packageService.getPackages()` melakukan filtering di sisi klien karena json-server tidak mendukung `gte`/`lte` secara langsung untuk rentang harga dan kuota.
 
-### Optimistic UI di Checkout
-- Saat user mengklik "Bayar Sekarang", state langsung diupdate secara optimistik. Jika API gagal, state di-rollback ke langkah konfirmasi. Ini memberikan feedback instan ke user.
+### Checkout Error Handling
+- Saat user mengklik "Bayar Sekarang", `loading` state di-set `true` dan request POST dikirim ke API. Jika berhasil, step berpindah ke `success` dan transaction ID ditampilkan. Jika gagal, step di-rollback ke `confirm` sehingga user bisa mencoba lagi.
 
-### Race Condition Prevention
-- `useRef(isSubmitting)` digunakan di `CheckoutModal` untuk mencegah double-submit jika user mengklik tombol bayar lebih dari sekali sebelum response kembali.
+### Double-Submit Prevention
+- `loading` state dari `modalStore` digunakan di `CheckoutModal` untuk mencegah double-submit — `handleConfirm` langsung return jika `loading` masih `true`, sehingga request kedua tidak terkirim meski tombol diklik berkali-kali.
 
 ---
 
